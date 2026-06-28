@@ -1,21 +1,73 @@
-# Haifa Intelligence
+<div align="center">
 
-The website for **Haifa Intelligence** — an AI & ML studio. Showcases services,
-work/portfolio, a shelf of AI models, video edits, and a founder portfolio, with
-a lead-capture contact flow.
+<img src="assets/haifa-banner.svg" alt="Haifa Intelligence" width="560" />
 
-Design language: calm-but-premium, heavy motion (smooth scroll + scroll reveals +
+# ✨ Haifa Intelligence
+
+**Intelligence, engineered.**
+
+The website & creative platform for **Haifa Intelligence** — an AI & ML studio.
+Showcasing our work, services, model shelf, and a public **AI Studio** that turns
+a prompt into a styled image on our own GPU.
+
+<br/>
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white)
+![AI Studio](https://img.shields.io/badge/AI_Studio-ComfyUI-6c5cff?style=flat-square)
+![Status](https://img.shields.io/badge/status-in_development-d24bff?style=flat-square)
+
+[Features](#-features) · [Quick start](#-quick-start) · [Project structure](#-project-structure) · [Roadmap](#-roadmap)
+
+</div>
+
+---
+
+## 🧠 About
+
+Haifa Intelligence is an AI & ML studio. We build machine-learning models, web &
+mobile products, and generative image / video work for teams who want to move fast
+and look sharp.
+
+This repository is the studio's **website** — a polished, heavily-animated Next.js
+app — plus the **AI Studio**, a public image-generation experience that runs on our
+own local GPU pipeline (no paid cloud API).
+
+Design language: *calm-but-premium*, high motion (smooth scroll + scroll reveals +
 parallax), light **and** dark themes (default dark).
 
-## Stack
+---
+
+## 🎨 Features
+
+- **AI Studio** — type a prompt, pick a curated **style** (no model jargon), tune
+  detail & resolution, and generate a real image. Backed by a local **ComfyUI**
+  Krea-2 pipeline; styles map internally to LoRAs + trigger words.
+  - 10 curated styles · steps (8–16) & resolution (1–5 MP) sliders with live
+    time-cost hints · aspect-ratio control · built-in prompt-optimizer hook.
+- **Portfolio & services** — work case studies, a shelf of AI models, services,
+  and a founder page.
+- **Premium motion** — Lenis smooth scroll, Framer Motion reveals & parallax.
+- **Theming** — light/dark with a tiny custom, dependency-free theme system
+  (anti-FOUC inline script + `useTheme` hook).
+- **Lead capture** — a contact flow (stub route now; NestJS API later).
+
+---
+
+## 🧱 Stack
 
 - **Next.js 16** (App Router, TypeScript, Turbopack) — `apps/web`
 - **Tailwind CSS v4** + **shadcn/ui** + **lucide-react**
 - **Framer Motion** (reveals, parallax) + **Lenis** (smooth scroll)
-- **next-themes** (light/dark) with CSS-variable design tokens
+- Custom **light/dark theme** system with CSS-variable design tokens
+- **ComfyUI** (Krea-2 turbo + LoRAs) as the AI Studio image backend
 - npm workspaces + **Turborepo** monorepo (so a NestJS `apps/api` drops in later)
 
-## Run it
+---
+
+## 🚀 Quick start
 
 ```bash
 # from the repo root
@@ -25,35 +77,69 @@ npm run dev          # turbo runs every app's dev task
 npm run web
 ```
 
-Open http://localhost:3000.
+Open <http://localhost:3000>.
 
 ```bash
 npm run build        # production build (type-checks everything)
 ```
 
-## Structure
+### AI Studio (optional, for image generation)
+
+The `/studio` page talks to a local **ComfyUI** server. Point it at yours:
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+# COMFYUI_URL=http://127.0.0.1:8188   (local)
+# COMFYUI_URL=https://<your-tunnel>   (Cloudflare Tunnel, for cloud deploys)
+```
+
+Without a reachable ComfyUI, the studio returns a friendly "GPU offline" message.
+
+---
+
+## 📁 Project structure
 
 ```
-apps/web                 Next.js frontend (the current deliverable)
-  app/                   routes: / · /work · /work/[slug] · /services
-                         /models · /founder · /contact · /api/contact (stub)
+apps/web                   Next.js frontend (the current deliverable)
+  app/                     routes: / · /work · /work/[slug] · /services
+                           /models · /founder · /contact · /studio
+    api/contact            lead-capture stub
+    api/studio/generate    image generation → ComfyUI
   components/
-    motion/              SmoothScroll, Reveal, Parallax, Marquee
-    layout/              Navbar, MobileMenu, Footer, Logo
-    sections/            home + page sections
-    shared/              cards, headings, aurora, icons
-    ui/                  shadcn primitives
-  lib/data/              typed content: services, projects, models, videos
-packages/                reserved (shared ui/config, NestJS api later)
+    motion/                SmoothScroll, Reveal, Parallax, Marquee
+    layout/                Navbar, MobileMenu, Footer, Logo
+    sections/              home + page sections (incl. studio client)
+    theme/                 custom theme script + useTheme hook
+    shared/                cards, headings, aurora, icons
+    ui/                    shadcn primitives
+  lib/
+    data/                  typed content: services, projects, models, styles…
+    comfy/                 ComfyUI client + captured Krea-2 workflow
+assets/                    repo media (logo/banner)
+packages/                  reserved (shared ui/config, NestJS api later)
 ```
 
-Content lives in `apps/web/lib/data/*` — adding a project, model, or video is a
-single typed array entry, no JSX.
+Content lives in `apps/web/lib/data/*` — adding a project, model, video, or studio
+style is a single typed array entry, no JSX.
 
-## Roadmap
+---
 
-- [ ] `apps/api` — NestJS lead capture, email, Postgres + Prisma (the contact form
-      currently posts to a stub route at `/api/contact`).
-- [ ] Real media: project images, video reels, founder photos.
-- [ ] CMS / admin, live model inference demos.
-```
+## 🗺️ Roadmap
+
+- [ ] **`apps/api`** — NestJS lead capture, email, Postgres + Prisma (the contact
+      form currently posts to a stub route).
+- [ ] **Studio hardening** — job queue (concurrency = 1 for the single GPU),
+      per-IP rate limits + daily quota, prompt moderation & logging.
+- [ ] **Prompt optimizer** — expose the workflow's built-in prompt refiner in the UI.
+- [ ] **Selective training** — train the studio on a user's own subject/style.
+- [ ] Real media (project images, reels, founder photos), CMS / admin.
+
+---
+
+<div align="center">
+
+Built by **[Danial Dirar](https://github.com/Danial-Dirar)** · Dhaka, Bangladesh · Remote worldwide
+
+© Haifa Intelligence — All rights reserved.
+
+</div>
