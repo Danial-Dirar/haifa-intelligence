@@ -240,14 +240,21 @@ const server = http.createServer(async (req, res) => {
         return send(res, 503, { error: "ComfyUI is offline." });
       }
 
-      // Still waiting its turn.
+      // Still waiting its turn. Surface the job currently on the GPU so the
+      // waiting user can watch the queue move (how far ahead, and its progress).
       if (pos && !pos.active) {
+        const active = currentPromptId ? jobs.get(currentPromptId) : null;
+        const aMax = active?.max ?? 0;
+        const aVal = active?.value ?? 0;
         return send(res, 200, {
           state: "queued",
           ahead: pos.ahead,
           progress: 0,
           value: 0,
           max: job?.max ?? 0,
+          activeProgress: aMax > 0 ? aVal / aMax : 0,
+          activeValue: aVal,
+          activeMax: aMax,
         });
       }
 

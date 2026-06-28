@@ -109,6 +109,10 @@ export type JobStatus = {
   progress?: number; // 0..1
   value?: number; // current step
   max?: number; // total steps
+  // While queued: the job currently on the GPU, so we can show the queue moving.
+  activeProgress?: number; // 0..1
+  activeValue?: number;
+  activeMax?: number;
   image?: string; // data URL, when done
   error?: string;
 };

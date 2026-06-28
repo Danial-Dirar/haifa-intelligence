@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Clock, Download, ImageIcon, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Clock, Download, ImageIcon, Loader2, Sparkles, Users, Wand2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,6 +99,9 @@ export function StudioClient() {
   const [busy, setBusy] = useState(false);
   const [pct, setPct] = useState(0);
   const [statusLabel, setStatusLabel] = useState("");
+  // Queue state: how many jobs are ahead of us, and the % of the one on the GPU now.
+  const [queueAhead, setQueueAhead] = useState(0);
+  const [activePct, setActivePct] = useState(0);
   const [results, setResults] = useState<Result[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,9 +123,12 @@ export function StudioClient() {
           if (!res.ok || !s.ok) throw new Error(s.error || "Lost track of the job.");
 
           if (s.state === "queued") {
+            setQueueAhead(s.ahead ?? 0);
+            setActivePct(Math.round((s.activeProgress ?? 0) * 100));
             setStatusLabel(s.ahead > 0 ? `In queue · ${s.ahead} ahead` : "Starting…");
             setPct(2);
           } else if (s.state === "running") {
+            setQueueAhead(0);
             const p = Math.round((s.progress ?? 0) * 100);
             setPct(Math.max(3, p));
             setStatusLabel(s.max > 0 ? `Generating · step ${s.value}/${s.max}` : "Generating…");
@@ -152,6 +158,8 @@ export function StudioClient() {
     if (timer.current) clearTimeout(timer.current);
     setBusy(true);
     setPct(0);
+    setQueueAhead(0);
+    setActivePct(0);
     setStatusLabel("Sending…");
     try {
       const res = await fetch("/api/studio/generate", {
@@ -308,8 +316,18 @@ export function StudioClient() {
       {/* Canvas */}
       <div className="space-y-6">
         <div
-          className="relative flex items-center justify-center overflow-hidden rounded-3xl border border-border/60 bg-card/30"
-          style={{ aspectRatio: `${activeAspect.rw} / ${activeAspect.rh}` }}
+          className="relative mx-auto flex w-full items-center justify-center overflow-hidden rounded-3xl border border-border/60 bg-card/30"
+          style={{
+            aspectRatio: `${activeAspect.rw} / ${activeAspect.rh}`,
+            // Keep the stage from ballooning on tall/portrait ratios: cap the
+            // height, and for portrait derive a matching max width so the box
+            // stays centered instead of stretching across the column.
+            maxHeight: "70vh",
+            maxWidth:
+              activeAspect.rh > activeAspect.rw
+                ? `calc(70vh * ${activeAspect.rw} / ${activeAspect.rh})`
+                : undefined,
+          }}
         >
           <div className="absolute inset-0 bg-grid opacity-20" />
           {current ? (
@@ -324,21 +342,50 @@ export function StudioClient() {
 
           {busy && (
             <div className="absolute inset-x-0 bottom-0 p-4">
-              <div className="glass space-y-2 rounded-2xl p-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <Loader2 className="size-3.5 animate-spin text-brand-2" />
-                    {statusLabel || "Working…"}
-                  </span>
-                  <span className="tabular-nums text-muted-foreground">{pct}%</span>
+              {queueAhead > 0 ? (
+                // Waiting our turn — show the queue and the job moving through it.
+                <div className="glass space-y-2.5 rounded-2xl p-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="relative flex size-2">
+                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-2 opacity-70" />
+                        <span className="relative inline-flex size-2 rounded-full bg-brand-2" />
+                      </span>
+                      <Users className="size-3.5 text-brand-2" />
+                      {queueAhead} ahead of you
+                    </span>
+                    <span className="tabular-nums text-muted-foreground">in queue</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[0.7rem] text-muted-foreground">
+                      <span>Now generating</span>
+                      <span className="tabular-nums">{activePct}%</span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-background/40">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-brand-1 to-brand-2 transition-all duration-500"
+                        style={{ width: `${Math.max(4, activePct)}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-background/40">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-2 to-brand-3 transition-all duration-300"
-                    style={{ width: `${pct}%` }}
-                  />
+              ) : (
+                <div className="glass space-y-2 rounded-2xl p-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Loader2 className="size-3.5 animate-spin text-brand-2" />
+                      {statusLabel || "Working…"}
+                    </span>
+                    <span className="tabular-nums text-muted-foreground">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-background/40">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-brand-2 to-brand-3 transition-all duration-300"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
