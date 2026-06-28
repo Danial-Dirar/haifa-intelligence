@@ -47,6 +47,11 @@ parallax), light **and** dark themes (default dark).
   Krea-2 pipeline; styles map internally to LoRAs + trigger words.
   - 10 curated styles · steps (8–16) & resolution (1–5 MP) sliders with live
     time-cost hints · aspect-ratio control · built-in prompt-optimizer hook.
+  - **Live queue & progress** — jobs enqueue without blocking; the UI shows real
+    queue position ("N ahead") then step-by-step progress, fed by the home bridge's
+    WebSocket to ComfyUI.
+  - **Style gallery** — two real outputs per style on `/studio`, plus a showcase
+    marquee on the homepage. Images are optimized WebP with blur-up placeholders.
 - **Portfolio & services** — work case studies, a shelf of AI models, services,
   and a founder page.
 - **Premium motion** — Lenis smooth scroll, Framer Motion reveals & parallax.
