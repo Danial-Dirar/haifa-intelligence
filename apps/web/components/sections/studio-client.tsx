@@ -97,9 +97,10 @@ export function StudioClient() {
   const [steps, setSteps] = useState<number>(stepRange.default);
   const [megapixels, setMegapixels] = useState<number>(megapixelRange.default);
   const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [pct, setPct] = useState(0);
+  const [statusLabel, setStatusLabel] = useState("");
   const [results, setResults] = useState<Result[]>([]);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeStyle = styles.find((s) => s.id === styleId)!;
   const activeAspect = aspectRatios.find((a) => a.id === aspect)!;
@@ -109,15 +110,38 @@ export function StudioClient() {
   const mpHeat = (megapixels - megapixelRange.min) / (megapixelRange.max - megapixelRange.min);
   const current = results[0];
 
-  function startProgress() {
-    setProgress(6);
-    timer.current = setInterval(() => {
-      setProgress((p) => (p < 90 ? p + Math.random() * 9 : p));
-    }, 180);
-  }
-  function stopProgress() {
-    if (timer.current) clearInterval(timer.current);
-    timer.current = null;
+  /** Poll the job until it finishes; resolves with the final image data URL. */
+  function pollUntilDone(promptId: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const tick = async () => {
+        try {
+          const res = await fetch(`/api/studio/status?id=${encodeURIComponent(promptId)}`);
+          const s = await res.json();
+          if (!res.ok || !s.ok) throw new Error(s.error || "Lost track of the job.");
+
+          if (s.state === "queued") {
+            setStatusLabel(s.ahead > 0 ? `In queue · ${s.ahead} ahead` : "Starting…");
+            setPct(2);
+          } else if (s.state === "running") {
+            const p = Math.round((s.progress ?? 0) * 100);
+            setPct(Math.max(3, p));
+            setStatusLabel(s.max > 0 ? `Generating · step ${s.value}/${s.max}` : "Generating…");
+          } else if (s.state === "done") {
+            setPct(100);
+            setStatusLabel("Finishing…");
+            resolve(s.image as string);
+            return;
+          } else if (s.state === "error") {
+            reject(new Error(s.error || "Generation failed."));
+            return;
+          }
+          timer.current = setTimeout(tick, 1000);
+        } catch (e) {
+          reject(e instanceof Error ? e : new Error("Status check failed."));
+        }
+      };
+      tick();
+    });
   }
 
   async function generate() {
@@ -125,8 +149,10 @@ export function StudioClient() {
       toast.error("Write a longer prompt first.");
       return;
     }
+    if (timer.current) clearTimeout(timer.current);
     setBusy(true);
-    startProgress();
+    setPct(0);
+    setStatusLabel("Sending…");
     try {
       const res = await fetch("/api/studio/generate", {
         method: "POST",
@@ -134,20 +160,24 @@ export function StudioClient() {
         body: JSON.stringify({ prompt, styleId, aspect, steps, megapixels }),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || "Generation failed");
+      if (!res.ok || !data.ok) throw new Error(data.error || "Could not start the job.");
 
-      setProgress(100);
+      const image = await pollUntilDone(data.promptId);
       setResults((prev) => [
-        { id: data.id, image: data.image, prompt, style: data.style, seed: data.seed },
+        { id: data.promptId, image, prompt, style: data.style, seed: data.seed },
         ...prev,
       ]);
-      toast.success("Preview ready", { description: data.note });
+      toast.success("Image ready");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
-      stopProgress();
-      setTimeout(() => setProgress(0), 600);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = null;
       setBusy(false);
+      setTimeout(() => {
+        setPct(0);
+        setStatusLabel("");
+      }, 800);
     }
   }
 
@@ -294,11 +324,18 @@ export function StudioClient() {
 
           {busy && (
             <div className="absolute inset-x-0 bottom-0 p-4">
-              <div className="glass rounded-full p-1.5">
+              <div className="glass space-y-2 rounded-2xl p-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Loader2 className="size-3.5 animate-spin text-brand-2" />
+                    {statusLabel || "Working…"}
+                  </span>
+                  <span className="tabular-nums text-muted-foreground">{pct}%</span>
+                </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-background/40">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-2 to-brand-3 transition-all duration-200"
-                    style={{ width: `${progress}%` }}
+                    className="h-full rounded-full bg-gradient-to-r from-brand-2 to-brand-3 transition-all duration-300"
+                    style={{ width: `${pct}%` }}
                   />
                 </div>
               </div>

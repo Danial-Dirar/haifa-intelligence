@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Haifa Studio bridge — runs at home next to the GPU, fronts ComfyUI with a queue + live-progress API.",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  }
+}

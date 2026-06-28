@@ -1,11 +1,14 @@
 /**
- * Minimal server-side ComfyUI client for the AI Studio.
+ * Studio client (server-side, Next route handlers).
  *
- * Flow: build a graph from the krea2 template -> POST /prompt -> poll
- * /history/{id} until done -> fetch the PNG via /view -> return a data URL.
+ * Talks to the home **bridge** (apps/api), not ComfyUI directly. The bridge owns
+ * the WebSocket to ComfyUI, so it knows live per-step progress and queue position;
+ * we just build the graph here, enqueue it, and poll status.
  *
- * Runs server-side only (Next route handler). Reaches ComfyUI on localhost now;
- * point COMFYUI_URL at the Cloudflare Tunnel when the site goes to the cloud.
+ *   Next route --STUDIO_BRIDGE_URL--> bridge --localhost--> ComfyUI
+ *
+ * Locally the bridge runs on 127.0.0.1:8189; in the cloud STUDIO_BRIDGE_URL is the
+ * Cloudflare Tunnel URL that fronts the home bridge.
  */
 import { krea2Workflow } from "./krea2-workflow";
 import type { ImageStyle } from "@/lib/data/styles";
@@ -17,7 +20,7 @@ export type ComfyNode = {
 };
 export type ComfyGraph = Record<string, ComfyNode>;
 
-export const COMFYUI_URL = process.env.COMFYUI_URL ?? "http://127.0.0.1:8188";
+export const BRIDGE_URL = (process.env.STUDIO_BRIDGE_URL ?? "http://127.0.0.1:8189").replace(/\/$/, "");
 
 /** Node ids in the krea2 template we override per request. */
 const NODE = {
@@ -71,86 +74,50 @@ export function buildGraph(p: GenerateParams): ComfyGraph {
   return g;
 }
 
-type HistoryEntry = {
-  status?: { completed?: boolean; status_str?: string };
-  outputs?: Record<string, { images?: { filename: string; subfolder: string; type: string }[] }>;
-};
+export class BridgeOfflineError extends Error {}
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-async function comfyFetch(path: string, init?: RequestInit, timeoutMs = 10_000) {
+async function bridgeFetch(path: string, init?: RequestInit, timeoutMs = 12_000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(`${COMFYUI_URL}${path}`, { ...init, signal: ctrl.signal });
+    return await fetch(`${BRIDGE_URL}${path}`, { ...init, signal: ctrl.signal });
+  } catch {
+    throw new BridgeOfflineError("Studio GPU is offline.");
   } finally {
     clearTimeout(t);
   }
 }
 
-export class ComfyOfflineError extends Error {}
-
-/** Submit a graph, wait for the result, return the first image as a PNG data URL. */
-export async function generateImage(
-  params: GenerateParams,
-  { pollMs = 1_000, maxWaitMs = 180_000 }: { pollMs?: number; maxWaitMs?: number } = {}
-): Promise<{ image: string; width: number; height: number; filename: string }> {
+/** Build + submit a job. Returns immediately with the prompt id (no GPU wait). */
+export async function enqueue(params: GenerateParams): Promise<{ promptId: string }> {
   const graph = buildGraph(params);
-  const clientId = crypto.randomUUID();
+  const res = await bridgeFetch("/enqueue", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ graph }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 503) throw new BridgeOfflineError(data.error ?? "Studio GPU is offline.");
+  if (!res.ok) throw new Error(data.error ?? "Could not start the job.");
+  if (!data.promptId) throw new Error("No job id returned.");
+  return { promptId: data.promptId };
+}
 
-  let queued: Response;
-  try {
-    queued = await comfyFetch("/prompt", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: graph, client_id: clientId }),
-    });
-  } catch {
-    throw new ComfyOfflineError("Studio GPU is offline.");
-  }
+export type JobStatus = {
+  state: "queued" | "running" | "done" | "error";
+  ahead?: number;
+  progress?: number; // 0..1
+  value?: number; // current step
+  max?: number; // total steps
+  image?: string; // data URL, when done
+  error?: string;
+};
 
-  if (!queued.ok) {
-    const detail = await queued.text().catch(() => "");
-    throw new Error(`ComfyUI rejected the job (${queued.status}). ${detail.slice(0, 300)}`);
-  }
-  const { prompt_id: promptId } = (await queued.json()) as { prompt_id: string };
-  if (!promptId) throw new Error("ComfyUI did not return a prompt id.");
-
-  // Poll history until this prompt completes.
-  const deadline = Date.now() + maxWaitMs;
-  while (Date.now() < deadline) {
-    await sleep(pollMs);
-    const res = await comfyFetch(`/history/${promptId}`).catch(() => null);
-    if (!res?.ok) continue;
-    const hist = (await res.json()) as Record<string, HistoryEntry>;
-    const entry = hist[promptId];
-    if (!entry) continue;
-
-    const statusStr = entry.status?.status_str;
-    if (statusStr === "error") throw new Error("Generation failed on the GPU.");
-    if (!entry.status?.completed) continue;
-
-    const img = entry.outputs
-      ? Object.values(entry.outputs).flatMap((o) => o.images ?? [])[0]
-      : undefined;
-    if (!img) throw new Error("Generation finished but produced no image.");
-
-    const view = await comfyFetch(
-      `/view?filename=${encodeURIComponent(img.filename)}&subfolder=${encodeURIComponent(
-        img.subfolder
-      )}&type=${encodeURIComponent(img.type)}`,
-      undefined,
-      30_000
-    );
-    if (!view.ok) throw new Error("Could not fetch the generated image.");
-    const buf = Buffer.from(await view.arrayBuffer());
-    return {
-      image: `data:image/png;base64,${buf.toString("base64")}`,
-      width: params.width,
-      height: params.height,
-      filename: img.filename,
-    };
-  }
-
-  throw new Error("Timed out waiting for the image.");
+/** Poll a job's queue position + live progress (and the image once done). */
+export async function getStatus(id: string): Promise<JobStatus> {
+  const res = await bridgeFetch(`/status?id=${encodeURIComponent(id)}`);
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 503) throw new BridgeOfflineError(data.error ?? "Studio GPU is offline.");
+  if (!res.ok) throw new Error(data.error ?? "Could not read job status.");
+  return data as JobStatus;
 }

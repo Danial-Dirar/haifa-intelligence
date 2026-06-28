@@ -85,26 +85,46 @@ npm run build        # production build (type-checks everything)
 
 ### AI Studio (optional, for image generation)
 
-The `/studio` page talks to a local **ComfyUI** server. Point it at yours:
+The studio runs on a home GPU. The web app talks to a small **bridge** (`apps/api`)
+that fronts **ComfyUI** — the bridge holds a WebSocket to ComfyUI so it can report
+live per-step progress and queue position.
 
-```bash
-cp apps/web/.env.example apps/web/.env.local
-# COMFYUI_URL=http://127.0.0.1:8188   (local)
-# COMFYUI_URL=https://<your-tunnel>   (Cloudflare Tunnel, for cloud deploys)
+```
+browser → Next API → STUDIO_BRIDGE_URL → bridge (apps/api) → ComfyUI (localhost)
 ```
 
-Without a reachable ComfyUI, the studio returns a friendly "GPU offline" message.
+Run all three at home:
+
+```bash
+# 1) ComfyUI (listen so the bridge can reach it)
+python main.py --listen 0.0.0.0 --port 8188
+
+# 2) the bridge (defaults: COMFYUI_URL=127.0.0.1:8188, PORT=8189)
+npm run start --workspace api      # or: npm run dev --workspace api
+
+# 3) tell the web app where the bridge is
+cp apps/web/.env.example apps/web/.env.local
+# STUDIO_BRIDGE_URL=http://127.0.0.1:8189            (local)
+# STUDIO_BRIDGE_URL=https://<your-tunnel>            (Cloudflare Tunnel → bridge, for cloud)
+```
+
+For the deployed site, point a Cloudflare Tunnel at the **bridge** (port 8189) and set
+`STUDIO_BRIDGE_URL` on Vercel to that URL. Without a reachable bridge, the studio shows
+a friendly "GPU offline" message.
 
 ---
 
 ## 📁 Project structure
 
 ```
+apps/api                   Studio bridge (runs at home): WS to ComfyUI for live
+                           progress + queue, /enqueue + /status. No dependencies.
 apps/web                   Next.js frontend (the current deliverable)
   app/                     routes: / · /work · /work/[slug] · /services
                            /models · /founder · /contact · /studio
     api/contact            lead-capture stub
-    api/studio/generate    image generation → ComfyUI
+    api/studio/generate    enqueue a job on the bridge
+    api/studio/status      poll queue position + progress + result
   components/
     motion/                SmoothScroll, Reveal, Parallax, Marquee
     layout/                Navbar, MobileMenu, Footer, Logo
@@ -128,8 +148,10 @@ style is a single typed array entry, no JSX.
 
 - [ ] **`apps/api`** — NestJS lead capture, email, Postgres + Prisma (the contact
       form currently posts to a stub route).
-- [ ] **Studio hardening** — job queue (concurrency = 1 for the single GPU),
-      per-IP rate limits + daily quota, prompt moderation & logging.
+- [x] **Studio queue & live progress** — bridge surfaces ComfyUI's serial queue
+      (position) and real per-step progress; jobs enqueue without blocking.
+- [ ] **Studio hardening** — per-IP rate limits + daily quota, a shared-secret between
+      Vercel and the bridge, prompt-moderation logging.
 - [ ] **Prompt optimizer** — expose the workflow's built-in prompt refiner in the UI.
 - [ ] **Selective training** — train the studio on a user's own subject/style.
 - [ ] Real media (project images, reels, founder photos), CMS / admin.

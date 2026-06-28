@@ -1,19 +1,15 @@
 import { NextResponse } from "next/server";
 import { getStyle, aspectRatios, dimsFor, stepRange, megapixelRange } from "@/lib/data/styles";
-import { generateImage, ComfyOfflineError } from "@/lib/comfy/client";
+import { enqueue, BridgeOfflineError } from "@/lib/comfy/client";
 
 /**
- * Real image generation against Danial's local ComfyUI (krea2 turbo).
+ * Enqueue an image-generation job on the home GPU (via the bridge).
  *
- * Validates + lightly moderates input, maps the public style -> LoRA, builds the
- * ComfyUI workflow, runs it on the GPU, and returns the resulting PNG.
- *
- * Phase 2 TODO: move the GPU call behind a NestJS job queue (concurrency=1) with
- * per-IP rate limits + daily quota, and stream /ws progress instead of polling.
+ * This returns immediately with a job id — the browser then polls
+ * /api/studio/status for queue position + live progress + the final image.
+ * Because we no longer block on the GPU, there is no long serverless function
+ * and no timeout pressure.
  */
-
-// A single image can take a while on the 8GB GPU — give the route room.
-export const maxDuration = 200;
 
 const BLOCKED = ["nsfw", "nude", "naked", "porn", "gore", "explicit"];
 
@@ -51,30 +47,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "That prompt isn't allowed." }, { status: 422 });
   }
 
-  const id = Math.random().toString(36).slice(2, 8);
   const seed = Math.floor(Math.random() * 1_000_000_000_000);
 
   try {
-    const result = await generateImage({ prompt, style, steps, width: w, height: h, seed });
+    const { promptId } = await enqueue({ prompt, style, steps, width: w, height: h, seed });
     return NextResponse.json({
       ok: true,
-      id,
+      promptId,
       seed,
-      image: result.image,
-      width: result.width,
-      height: result.height,
+      width: w,
+      height: h,
       steps,
       megapixels,
       style: style.name,
     });
   } catch (err) {
-    if (err instanceof ComfyOfflineError) {
+    if (err instanceof BridgeOfflineError) {
       return NextResponse.json(
         { ok: false, error: "The studio GPU is offline right now. Please try again later." },
         { status: 503 }
       );
     }
-    const message = err instanceof Error ? err.message : "Generation failed.";
+    const message = err instanceof Error ? err.message : "Could not start the job.";
     console.error("[studio/generate]", message);
     return NextResponse.json({ ok: false, error: message }, { status: 502 });
   }
