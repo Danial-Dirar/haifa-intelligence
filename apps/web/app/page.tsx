@@ -1,6 +1,7 @@
 import { Hero } from "@/components/sections/hero";
 import { Stats } from "@/components/sections/stats";
 import { Services } from "@/components/sections/services";
+import { StudioShowcase } from "@/components/sections/studio-showcase";
 import { FeaturedWork } from "@/components/sections/featured-work";
 import { ModelsShowcase } from "@/components/sections/models-showcase";
 import { VideoGallery } from "@/components/sections/video-gallery";
@@ -14,6 +15,7 @@ export default function HomePage() {
       <Hero />
       <Stats />
       <Services />
+      <StudioShowcase />
       <FeaturedWork />
       <ModelsShowcase />
       <VideoGallery />

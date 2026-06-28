@@ -3,6 +3,7 @@ import { Cpu, GraduationCap, Layers, ShieldCheck, Wand2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Reveal } from "@/components/motion/reveal";
 import { StudioClient } from "@/components/sections/studio-client";
+import { StyleGallery } from "@/components/sections/style-gallery";
 
 export const metadata: Metadata = {
   title: "AI Studio",
@@ -39,7 +40,7 @@ export default function StudioPage() {
             Make an image. Pick a <span className="text-gradient">style</span>, not a model.
           </>
         }
-        description="Type what you want, choose a look, and our local AI pipeline generates it. This is a live preview of the studio — full image generation connects to our GPU shortly."
+        description="Type what you want, choose a look, and our own GPU generates it live — with a real queue and step-by-step progress. No model jargon, just styles."
       />
 
       <section className="container-page pb-12">
@@ -47,6 +48,8 @@ export default function StudioPage() {
           <StudioClient />
         </Reveal>
       </section>
+
+      <StyleGallery />
 
       <section className="container-page pb-24">
         <div className="grid gap-4 sm:grid-cols-3">
