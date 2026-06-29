@@ -18,6 +18,8 @@ export const site = {
     name: "Danial Dirar",
     role: "Founder · ML & Software Engineer",
     github: "https://github.com/Danial-Dirar",
+    scholar: "https://scholar.google.com/citations?user=OeiDTrwAAAAJ&hl=en",
+    orcid: "https://orcid.org/0009-0002-4081-4175",
   },
 } as const;
 

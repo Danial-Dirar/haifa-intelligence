@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Reveal } from "@/components/motion/reveal";
 import { Marquee } from "@/components/motion/marquee";
 import { ProjectCard } from "@/components/shared/project-card";
+import { Publications } from "@/components/sections/publications";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/lib/data/projects";
 import { capabilities } from "@/lib/data/misc";
@@ -45,6 +46,13 @@ export default function FounderPage() {
             <a href={site.social.github} target="_blank" rel="noreferrer">
               <GitHubIcon className="size-4" />
               GitHub
+            </a>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
+            <a href={site.founder.scholar} target="_blank" rel="noreferrer">
+              <GraduationCap className="size-4" />
+              Publications
+              <ArrowUpRight className="size-4" />
             </a>
           </Button>
           <Button asChild variant="outline" className="rounded-full">
@@ -115,6 +123,8 @@ export default function FounderPage() {
           ))}
         </div>
       </section>
+
+      <Publications />
 
       <section className="py-16">
         <Marquee duration={28} className="[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
