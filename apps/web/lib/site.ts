@@ -6,7 +6,7 @@ export const site = {
   description:
     "Haifa Intelligence is an AI & ML studio. We build machine-learning models, web & mobile products, and generative image / video work for teams who want to move fast and look sharp.",
   url: "https://haifa.intelligence",
-  email: "hello@haifa.ai",
+  email: "danieldirar@protonmail.com",
   location: "Dhaka, Bangladesh · Remote worldwide",
   social: {
     github: "https://github.com/Danial-Dirar",
