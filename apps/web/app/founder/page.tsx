@@ -8,6 +8,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { Marquee } from "@/components/motion/marquee";
 import { ProjectCard } from "@/components/shared/project-card";
 import { Publications } from "@/components/sections/publications";
+import { Team } from "@/components/sections/team";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/lib/data/projects";
 import { capabilities } from "@/lib/data/misc";
@@ -141,6 +142,8 @@ export default function FounderPage() {
       </section>
 
       <Publications />
+
+      <Team />
 
       <section className="py-16">
         <Marquee duration={28} className="[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">

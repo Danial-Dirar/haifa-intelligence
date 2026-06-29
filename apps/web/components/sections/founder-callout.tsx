@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, BookOpen } from "lucide-react";
 import { GitHubIcon } from "@/components/shared/icons";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { founderPhoto } from "@/lib/data/founder";
+import { publications } from "@/lib/data/publications";
 import { site } from "@/lib/site";
 
 export function FounderCallout() {
@@ -44,6 +45,16 @@ export function FounderCallout() {
                 groundwater-level prediction. Haifa Intelligence grew out of that
                 research and a habit of building things end-to-end.
               </p>
+
+              <Link
+                href="/founder"
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-2/30 bg-brand-2/10 px-3 py-1.5 text-sm text-brand-2 transition-colors hover:bg-brand-2/15"
+              >
+                <BookOpen className="size-3.5" />
+                {publications.length} peer-reviewed publications
+                <ArrowUpRight className="size-3.5" />
+              </Link>
+
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild className="rounded-full">
                   <Link href="/founder">

@@ -11,6 +11,8 @@ export type TeamMember = {
   bio: string;
   /** A few areas they work in, shown as chips. */
   focus: string[];
+  /** GitHub profile URL. Leave empty to show the button in a "coming soon" state. */
+  github?: string;
   photo: {
     src: string;
     alt: string;
@@ -24,8 +26,9 @@ export const team: TeamMember[] = [
   {
     name: "Dipta Mazumder",
     role: "ML & Computer Vision",
-    bio: "Computer Science finalist at BRAC University. Works across machine learning and computer vision — from prediction models to multi-modal vision systems and custom LoRA image-generation pipelines for the studio.",
-    focus: ["Machine Learning", "Computer Vision", "PyTorch", "Image generation"],
+    bio: "Computer Science finalist at BRAC University. Works across machine learning and computer vision — from prediction models to multi-modal vision systems and cinematographic AI pipelines for the studio.",
+    focus: ["Machine Learning", "Computer Vision", "PyTorch", "Cinematographic AI"],
+    github: "", // TODO: add Dipta's GitHub URL
     photo: {
       src: "/team/dipta.jpg",
       alt: "Dipta Mazumder",

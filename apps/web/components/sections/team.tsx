@@ -1,6 +1,8 @@
 import Image from "next/image";
+import { GitHubIcon } from "@/components/shared/icons";
 import { Reveal } from "@/components/motion/reveal";
 import { team } from "@/lib/data/team";
+import { cn } from "@/lib/utils";
 
 /**
  * The people building Haifa Intelligence alongside the founder. Scales from one
@@ -51,6 +53,28 @@ export function Team() {
                     </span>
                   ))}
                 </div>
+
+                {m.github ? (
+                  <a
+                    href={m.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-brand-1/40 hover:text-foreground"
+                  >
+                    <GitHubIcon className="size-3.5" />
+                    GitHub
+                  </a>
+                ) : (
+                  <span
+                    title="Coming soon"
+                    className={cn(
+                      "mt-4 inline-flex cursor-default items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground/60"
+                    )}
+                  >
+                    <GitHubIcon className="size-3.5" />
+                    GitHub
+                  </span>
+                )}
               </div>
             </div>
           </Reveal>

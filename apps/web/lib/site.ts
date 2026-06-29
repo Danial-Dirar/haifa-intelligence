@@ -28,6 +28,6 @@ export const nav = [
   { label: "Studio", href: "/studio" },
   { label: "Work", href: "/work" },
   { label: "Models", href: "/models" },
-  { label: "Founder", href: "/founder" },
+  { label: "Team", href: "/founder" },
   { label: "Contact", href: "/contact" },
 ] as const;
