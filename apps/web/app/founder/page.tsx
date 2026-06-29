@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, GraduationCap, Mail, MapPin } from "lucide-react";
 import { GitHubIcon } from "@/components/shared/icons";
-import { PageHeader } from "@/components/shared/page-header";
+import { Eyebrow } from "@/components/shared/section-heading";
+import { Aurora } from "@/components/shared/aurora";
 import { Reveal } from "@/components/motion/reveal";
 import { Marquee } from "@/components/motion/marquee";
 import { Publications } from "@/components/sections/publications";
@@ -34,150 +35,150 @@ export default function FounderPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="The people behind Haifa"
-        title={
-          <>
-            Hi, I&apos;m <span className="text-gradient">Danial Dirar</span>.
-          </>
-        }
-        description="Computer engineering student, ML researcher, and the person building Haifa Intelligence. My thesis is on groundwater-level prediction — and I build software end-to-end, with a small team alongside me."
-      >
-        <div className="flex flex-wrap gap-3">
-          <Button asChild className="rounded-full">
-            <a href={site.social.github} target="_blank" rel="noreferrer">
-              <GitHubIcon className="size-4" />
-              GitHub
-            </a>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full">
-            <a href={site.founder.scholar} target="_blank" rel="noreferrer">
-              <GraduationCap className="size-4" />
-              Publications
-              <ArrowUpRight className="size-4" />
-            </a>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/contact">
-              Work with me
-              <ArrowUpRight className="size-4" />
-            </Link>
-          </Button>
-        </div>
-      </PageHeader>
+      {/* Hero — intro on the left, founder portrait on the right */}
+      <section className="relative overflow-hidden pt-36 pb-12 md:pt-44 md:pb-16">
+        <Aurora className="opacity-60" />
+        <div className="absolute inset-0 -z-10 bg-grid mask-fade opacity-50" />
+        <div className="container-page">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+            <div>
+              <Reveal>
+                <Eyebrow>The people behind Haifa</Eyebrow>
+              </Reveal>
+              <Reveal delay={0.05}>
+                <h1 className="mt-5 max-w-2xl font-display text-4xl font-semibold tracking-tight text-balance md:text-6xl">
+                  Hi, I&apos;m <span className="text-gradient">Danial Dirar</span>.
+                </h1>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p className="mt-5 max-w-xl text-lg text-muted-foreground text-pretty">
+                  Computer science student, ML researcher, and the person building Haifa
+                  Intelligence. My thesis is on groundwater-level prediction — and I build
+                  software end-to-end, with a small team alongside me.
+                </p>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Button asChild className="rounded-full">
+                    <a href={site.social.github} target="_blank" rel="noreferrer">
+                      <GitHubIcon className="size-4" />
+                      GitHub
+                    </a>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="rounded-full border-brand-2/40 bg-brand-2/10 text-brand-2 hover:bg-brand-2/20 hover:text-brand-2"
+                  >
+                    <a href={site.founder.scholar} target="_blank" rel="noreferrer">
+                      <GraduationCap className="size-4" />
+                      Publications
+                      <ArrowUpRight className="size-4" />
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-full">
+                    <Link href="/contact">
+                      Work with me
+                      <ArrowUpRight className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </Reveal>
+            </div>
 
-      {/* People — founder showcased on the right, the team stacked on the left */}
-      <section className="container-page">
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.25fr] lg:items-start">
-          {/* Team (left, stacked) */}
-          <div className="order-2 lg:order-1">
-            <h2 className="font-display text-xl font-semibold tracking-tight">The team</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Building Haifa Intelligence alongside the founder.
-            </p>
-            <div className="mt-5 space-y-4">
-              {team.map((m, i) => (
-                <Reveal key={m.name} delay={i * 0.06}>
-                  <div className="group flex gap-4 rounded-2xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-brand-1/40">
-                    <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60">
-                      <Image
-                        src={m.photo.src}
-                        alt={m.photo.alt}
-                        fill
-                        sizes="96px"
-                        placeholder="blur"
-                        blurDataURL={m.photo.blurDataURL}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        style={{ objectPosition: m.photo.position ?? "center" }}
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-display text-base font-semibold leading-tight">{m.name}</h3>
-                      <p className="text-sm text-brand-2">{m.role}</p>
-                      <p className="mt-1.5 line-clamp-3 text-sm text-muted-foreground text-pretty">{m.bio}</p>
-                      <div className="mt-2.5 flex flex-wrap gap-1.5">
-                        {m.focus.map((f) => (
-                          <span
-                            key={f}
-                            className="rounded-full border border-border/60 bg-background/50 px-2 py-0.5 text-[0.7rem] text-muted-foreground"
-                          >
-                            {f}
-                          </span>
-                        ))}
-                      </div>
-                      {m.github ? (
-                        <a
-                          href={m.github}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-brand-1/40 hover:text-foreground"
-                        >
-                          <GitHubIcon className="size-3.5" />
-                          GitHub
-                        </a>
-                      ) : (
-                        <span
-                          title="Coming soon"
-                          className="mt-3 inline-flex cursor-default items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground/60"
-                        >
-                          <GitHubIcon className="size-3.5" />
-                          GitHub
-                        </span>
-                      )}
-                    </div>
+            {/* Founder portrait — framed, not a card */}
+            <Reveal delay={0.1}>
+              <div className="mx-auto w-full max-w-[300px] lg:ml-auto lg:mr-0">
+                <div className="relative">
+                  <div className="absolute -inset-5 -z-10 rounded-[2.5rem] bg-brand-1/15 blur-3xl" />
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] ring-1 ring-border/60 shadow-2xl shadow-brand-1/10">
+                    <Image
+                      src={founderPhoto.src}
+                      alt={founderPhoto.alt}
+                      fill
+                      sizes="300px"
+                      placeholder="blur"
+                      blurDataURL={founderPhoto.blurDataURL}
+                      className="object-cover"
+                      style={{ objectPosition: "55% 22%" }}
+                    />
                   </div>
-                </Reveal>
-              ))}
-            </div>
+                </div>
+                <p className="mt-5 text-center text-sm font-medium text-brand-2">
+                  {site.founder.role}
+                </p>
+                <div className="mt-5 space-y-3">
+                  <Fact icon={<GraduationCap className="size-4" />} label="Studying" value="BSc. (Hons) in Computer Science" />
+                  <Fact icon={<MapPin className="size-4" />} label="Based in" value="Dhaka, Bangladesh" />
+                  <Fact icon={<Mail className="size-4" />} label="Reach me" value={site.email} />
+                </div>
+              </div>
+            </Reveal>
           </div>
+        </div>
+      </section>
 
-          {/* Founder (right, bigger showcase box) */}
-          <Reveal className="order-1 lg:order-2">
-            <div className="rounded-3xl border border-border/60 bg-card/40 p-6 md:p-8">
-              <p className="text-xs font-medium uppercase tracking-wider text-brand-2">Founder</p>
-              <div className="relative mx-auto mt-4 aspect-[4/5] w-full max-w-[380px] overflow-hidden rounded-2xl ring-1 ring-border/60">
-                <Image
-                  src={founderPhoto.src}
-                  alt={founderPhoto.alt}
-                  fill
-                  sizes="(max-width: 1024px) 90vw, 380px"
-                  placeholder="blur"
-                  blurDataURL={founderPhoto.blurDataURL}
-                  className="object-cover"
-                  style={{ objectPosition: "55% 22%" }}
-                />
+      {/* The team — stacked on the left */}
+      <section className="container-page py-8">
+        <Reveal>
+          <h2 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">The team</h2>
+          <p className="mt-2 max-w-xl text-muted-foreground">
+            Building Haifa Intelligence alongside the founder.
+          </p>
+        </Reveal>
+        <div className="mt-6 max-w-2xl space-y-4">
+          {team.map((m, i) => (
+            <Reveal key={m.name} delay={i * 0.06}>
+              <div className="group flex gap-4 rounded-2xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-brand-1/40">
+                <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60">
+                  <Image
+                    src={m.photo.src}
+                    alt={m.photo.alt}
+                    fill
+                    sizes="96px"
+                    placeholder="blur"
+                    blurDataURL={m.photo.blurDataURL}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    style={{ objectPosition: m.photo.position ?? "center" }}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-display text-base font-semibold leading-tight">{m.name}</h3>
+                  <p className="text-sm text-brand-2">{m.role}</p>
+                  <p className="mt-1.5 line-clamp-3 text-sm text-muted-foreground text-pretty">{m.bio}</p>
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {m.focus.map((f) => (
+                      <span
+                        key={f}
+                        className="rounded-full border border-border/60 bg-background/50 px-2 py-0.5 text-[0.7rem] text-muted-foreground"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                  {m.github ? (
+                    <a
+                      href={m.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-brand-1/40 hover:text-foreground"
+                    >
+                      <GitHubIcon className="size-3.5" />
+                      GitHub
+                    </a>
+                  ) : (
+                    <span
+                      title="Coming soon"
+                      className="mt-3 inline-flex cursor-default items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground/60"
+                    >
+                      <GitHubIcon className="size-3.5" />
+                      GitHub
+                    </span>
+                  )}
+                </div>
               </div>
-              <h2 className="mt-5 font-display text-2xl font-semibold tracking-tight">
-                {site.founder.name}
-              </h2>
-              <p className="text-brand-2">{site.founder.role}</p>
-              <p className="mt-3 max-w-md text-sm text-muted-foreground text-pretty">
-                Computer engineer and ML researcher writing a thesis on groundwater-level
-                prediction — building Haifa Intelligence and shipping software end-to-end.
-              </p>
-
-              <div className="mt-5 space-y-3 border-t border-border/60 pt-5">
-                <Fact icon={<GraduationCap className="size-4" />} label="Studying" value="Computer Engineering" />
-                <Fact icon={<MapPin className="size-4" />} label="Based in" value="Dhaka, Bangladesh" />
-                <Fact icon={<Mail className="size-4" />} label="Reach me" value={site.email} />
-              </div>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                <Button asChild size="sm" className="rounded-full">
-                  <a href={site.social.github} target="_blank" rel="noreferrer">
-                    <GitHubIcon className="size-4" />
-                    GitHub
-                  </a>
-                </Button>
-                <Button asChild size="sm" variant="outline" className="rounded-full">
-                  <a href={site.founder.scholar} target="_blank" rel="noreferrer">
-                    <GraduationCap className="size-4" />
-                    Publications
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          ))}
         </div>
       </section>
 
