@@ -40,7 +40,7 @@ export default function FounderPage() {
         <Aurora className="opacity-60" />
         <div className="absolute inset-0 -z-10 bg-grid mask-fade opacity-50" />
         <div className="container-page">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-14">
             <div>
               <Reveal>
                 <Eyebrow>The people behind Haifa</Eyebrow>
@@ -88,7 +88,7 @@ export default function FounderPage() {
 
             {/* Founder portrait — framed, not a card */}
             <Reveal delay={0.1}>
-              <div className="mx-auto w-full max-w-[300px] lg:ml-auto lg:mr-0">
+              <div className="mx-auto w-full max-w-[300px]">
                 <div className="relative">
                   <div className="absolute -inset-5 -z-10 rounded-[2.5rem] bg-brand-1/15 blur-3xl" />
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] ring-1 ring-border/60 shadow-2xl shadow-brand-1/10">
