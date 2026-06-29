@@ -1,8 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { GitHubIcon } from "@/components/shared/icons";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
+import { founderPhoto } from "@/lib/data/founder";
 import { site } from "@/lib/site";
 
 export function FounderCallout() {
@@ -15,8 +17,17 @@ export function FounderCallout() {
 
           <div className="relative grid items-center gap-10 md:grid-cols-[auto_1fr]">
             <div className="flex items-center gap-5">
-              <div className="grid size-24 place-items-center rounded-3xl bg-gradient-to-br from-brand-2 via-brand-1 to-brand-3 font-display text-3xl font-bold text-white shadow-xl shadow-brand-1/30">
-                DD
+              <div className="relative h-36 w-28 shrink-0 overflow-hidden rounded-3xl shadow-xl shadow-brand-1/20 ring-1 ring-border/60 md:h-44 md:w-36">
+                <Image
+                  src={founderPhoto.src}
+                  alt={founderPhoto.alt}
+                  fill
+                  sizes="(max-width: 768px) 112px, 144px"
+                  placeholder="blur"
+                  blurDataURL={founderPhoto.blurDataURL}
+                  className="object-cover"
+                  style={{ objectPosition: "55% 22%" }}
+                />
               </div>
             </div>
 

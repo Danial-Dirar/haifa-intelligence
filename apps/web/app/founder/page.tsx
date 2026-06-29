@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, GraduationCap, Mail, MapPin } from "lucide-react";
 import { GitHubIcon } from "@/components/shared/icons";
@@ -10,6 +11,7 @@ import { Publications } from "@/components/sections/publications";
 import { Button } from "@/components/ui/button";
 import { projects } from "@/lib/data/projects";
 import { capabilities } from "@/lib/data/misc";
+import { founderPhoto } from "@/lib/data/founder";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -67,10 +69,24 @@ export default function FounderPage() {
       {/* Quick facts */}
       <section className="container-page">
         <Reveal>
-          <div className="grid gap-4 rounded-3xl border border-border/60 bg-card/40 p-6 sm:grid-cols-3">
-            <Fact icon={<GraduationCap className="size-4" />} label="Studying" value="Computer Engineering" />
-            <Fact icon={<MapPin className="size-4" />} label="Based in" value="Dhaka, Bangladesh" />
-            <Fact icon={<Mail className="size-4" />} label="Reach me" value={site.email} />
+          <div className="grid gap-6 rounded-3xl border border-border/60 bg-card/40 p-6 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-8">
+            <div className="relative mx-auto h-52 w-44 shrink-0 overflow-hidden rounded-2xl ring-1 ring-border/60 sm:mx-0">
+              <Image
+                src={founderPhoto.src}
+                alt={founderPhoto.alt}
+                fill
+                sizes="176px"
+                placeholder="blur"
+                blurDataURL={founderPhoto.blurDataURL}
+                className="object-cover"
+                style={{ objectPosition: "55% 22%" }}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Fact icon={<GraduationCap className="size-4" />} label="Studying" value="Computer Engineering" />
+              <Fact icon={<MapPin className="size-4" />} label="Based in" value="Dhaka, Bangladesh" />
+              <Fact icon={<Mail className="size-4" />} label="Reach me" value={site.email} />
+            </div>
           </div>
         </Reveal>
       </section>
