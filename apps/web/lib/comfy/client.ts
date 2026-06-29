@@ -80,7 +80,12 @@ async function bridgeFetch(path: string, init?: RequestInit, timeoutMs = 12_000)
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(`${BRIDGE_URL}${path}`, { ...init, signal: ctrl.signal });
+    return await fetch(`${BRIDGE_URL}${path}`, {
+      ...init,
+      // Skip ngrok's free-tier browser interstitial so the JSON comes back clean.
+      headers: { ...init?.headers, "ngrok-skip-browser-warning": "true" },
+      signal: ctrl.signal,
+    });
   } catch {
     throw new BridgeOfflineError("Studio GPU is offline.");
   } finally {

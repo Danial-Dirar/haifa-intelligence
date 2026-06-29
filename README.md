@@ -110,12 +110,29 @@ npm run start --workspace api      # or: npm run dev --workspace api
 # 3) tell the web app where the bridge is
 cp apps/web/.env.example apps/web/.env.local
 # STUDIO_BRIDGE_URL=http://127.0.0.1:8189            (local)
-# STUDIO_BRIDGE_URL=https://<your-tunnel>            (Cloudflare Tunnel → bridge, for cloud)
+# STUDIO_BRIDGE_URL=https://<your-domain>.ngrok-free.dev   (ngrok → bridge, for cloud)
 ```
 
-For the deployed site, point a Cloudflare Tunnel at the **bridge** (port 8189) and set
-`STUDIO_BRIDGE_URL` on Vercel to that URL. Without a reachable bridge, the studio shows
-a friendly "GPU offline" message.
+#### Exposing the home bridge (permanent ngrok domain)
+
+The deployed site (on Vercel) can't reach `127.0.0.1`, so the home bridge is fronted by
+an **ngrok static domain** — a fixed URL that survives reboots (unlike a quick Cloudflare
+Tunnel, which rotates on every restart). The free ngrok account includes one such domain.
+
+```bash
+# one-time: install + authenticate
+paru -S ngrok                                   # (Arch) or grab the binary from ngrok.com
+ngrok config add-authtoken <YOUR_AUTHTOKEN>     # from the ngrok dashboard
+
+# every time the GPU box boots — same URL every run:
+ngrok http 8189 --url=https://<your-domain>.ngrok-free.dev
+```
+
+Then set `STUDIO_BRIDGE_URL` on Vercel (Settings → Environment Variables) to that same
+`https://<your-domain>.ngrok-free.dev` and redeploy **once**. Because the domain is fixed,
+this never needs touching again. The web client sends `ngrok-skip-browser-warning` so
+ngrok's free-tier interstitial doesn't corrupt the JSON. Without a reachable bridge, the
+studio shows a friendly "GPU offline" message.
 
 ---
 
