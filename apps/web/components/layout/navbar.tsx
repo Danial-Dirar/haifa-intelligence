@@ -14,19 +14,35 @@ import { cn } from "@/lib/utils";
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  // Auto-hide: slide the bar away when scrolling down, bring it back on scroll up.
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 12);
+      // Ignore tiny jitter; never hide while near the very top of the page.
+      if (Math.abs(y - lastY) > 6) {
+        setHidden(y > lastY && y > 80);
+        lastY = y;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 md:pt-4">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 transition-transform duration-300 ease-out md:pt-4",
+        hidden ? "-translate-y-[150%]" : "translate-y-0"
+      )}
+    >
       <div
         className={cn(
-          "flex w-full max-w-6xl items-center justify-between gap-4 rounded-2xl border px-3 py-2 transition-all duration-300 md:px-4",
+          "flex w-full max-w-6xl items-center justify-between gap-4 rounded-2xl border px-3 py-2 transition-[background-color,border-color,box-shadow] duration-300 md:px-4",
           scrolled
             ? "glass-strong border-border/60 shadow-lg shadow-black/5"
             : "border-transparent bg-transparent"
