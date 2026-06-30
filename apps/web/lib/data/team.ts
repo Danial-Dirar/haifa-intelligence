@@ -38,14 +38,14 @@ export const team: TeamMember[] = [
     },
   },
   {
-    name: "Rashed",
+    name: "Md. Rashed Ul Islam Chowdhury",
     role: "Design & Frontend",
     bio: "Shapes how Haifa looks and feels — brand visuals, UI/UX, and the front-end that ships it. Turns dense AI tooling into clean, intuitive interfaces people actually enjoy using.",
     focus: ["UI/UX Design", "Graphic Design", "Frontend Dev", "React"],
     github: "", // TODO: add Rashed's GitHub URL
     photo: {
       src: "/team/rashed.jpg",
-      alt: "Rashed",
+      alt: "Md. Rashed Ul Islam Chowdhury",
       position: "50% 25%",
       blurDataURL:
         "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAwT/xAAjEAACAgIBAgcAAAAAAAAAAAABAgMRAAQFEjEUISIyQWFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAARAAH/2gAMAwEAAhEDEQA/AIIEMkmp60W0ez7vKz2xZYjrbWtCrp0lrF1ZBo/GQyclHGI0TXiBSz1UTQJ7DCXlH8QpVVKqAFDLdff6cGtXC//Z",
