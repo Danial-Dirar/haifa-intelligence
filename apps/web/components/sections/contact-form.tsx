@@ -24,7 +24,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const budgets = ["< $2k", "$2k–$5k", "$5k–$15k", "$15k+", "Not sure yet"];
+const budgets = ["$50–$200", "$200–$1k", "$2k–$5k", "$5k–$10k", "$10k+", "Not sure yet"];
 
 export function ContactForm() {
   const [selectedType, setSelectedType] = useState("");

@@ -164,9 +164,26 @@ export function dimsFor(aspectId: string, megapixels: number) {
   return { w: round16(Math.sqrt(mp * ratio)), h: round16(Math.sqrt(mp / ratio)) };
 }
 
-/** Rough relative time estimate (seconds) for the 3060 Ti — for UI hinting only. */
+/**
+ * Time estimate (seconds) for the home 3060 Ti (8 GB) — for UI hinting only.
+ *
+ * Calibrated to two REAL measured runs on the box:
+ *   8 steps  @ 1 MP (1232×816)  → ~34 s
+ *   16 steps @ 5 MP (2976×1680) → ~590 s
+ *
+ * Time is NOT linear in megapixels: with only 8 GB of VRAM, larger latents spill
+ * to system RAM and the per-step cost blows up super-linearly. A single power
+ * curve (mp^1.5) passes through both real anchors almost exactly, so it stays
+ * honest at the extremes and interpolates sensibly in between. Aspect ratio does
+ * not matter here — `megapixels` already fixes the total pixel count.
+ */
+const GEN_OVERHEAD_S = 8; // text-encode + VAE decode + load, roughly fixed
+const GEN_PER_STEP_S = 3.25; // cost of one sampling step at 1 MP
+const GEN_MP_EXPONENT = 1.5; // VRAM-spill penalty as the image grows
 export function estimateSeconds(steps: number, megapixels: number) {
-  return Math.round(3 + steps * megapixels * 1.4);
+  return Math.round(
+    GEN_OVERHEAD_S + GEN_PER_STEP_S * steps * Math.pow(megapixels, GEN_MP_EXPONENT)
+  );
 }
 
 /** Public-safe view of a style (no LoRA internals). */

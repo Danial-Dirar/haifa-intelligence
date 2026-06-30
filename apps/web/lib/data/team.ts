@@ -37,4 +37,18 @@ export const team: TeamMember[] = [
         "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAfABADAREAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAgUDBAb/xAAkEAACAQMDAwUAAAAAAAAAAAABAgMABBEFEjETQWEhIlGBwf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCS4jt4FmvpnBiOHjdRkg4wAKDMyXEdy7kqU3kkUDDVpxLYyBWPSa5DBeMAg/tATukuivF1gyq6hAYgC3Hfx60CV3a4GXYkjt8UB21w0MiqRuABBB4IoKwbB+qAy3uB8UH/2Q==",
     },
   },
+  {
+    name: "Rashed",
+    role: "Design & Frontend",
+    bio: "Shapes how Haifa looks and feels — brand visuals, UI/UX, and the front-end that ships it. Turns dense AI tooling into clean, intuitive interfaces people actually enjoy using.",
+    focus: ["UI/UX Design", "Graphic Design", "Frontend Dev", "React"],
+    github: "", // TODO: add Rashed's GitHub URL
+    photo: {
+      src: "/team/rashed.jpg",
+      alt: "Rashed",
+      position: "50% 25%",
+      blurDataURL:
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAQABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAwT/xAAjEAACAgIBAgcAAAAAAAAAAAABAgMRAAQFEjEUISIyQWFx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAARAAH/2gAMAwEAAhEDEQA/AIIEMkmp60W0ez7vKz2xZYjrbWtCrp0lrF1ZBo/GQyclHGI0TXiBSz1UTQJ7DCXlH8QpVVKqAFDLdff6cGtXC//Z",
+    },
+  },
 ];
