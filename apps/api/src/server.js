@@ -14,10 +14,24 @@
  * No dependencies — Node's global fetch + WebSocket (Node >= 22).
  */
 import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
 
 const COMFYUI_URL = (process.env.COMFYUI_URL ?? "http://127.0.0.1:8188").replace(/\/$/, "");
 const PORT = Number(process.env.PORT ?? 8189);
 const CLIENT_ID = "haifa-bridge";
+
+// Manual pause switch: when this file exists the GPU is "busy" (e.g. gaming), so
+// we refuse new jobs and the site shows "GPU offline". Toggled by `studio pause`/
+// `studio resume`. In-flight jobs are left alone.
+const PAUSE_FILE = process.env.STUDIO_PAUSE_FILE ?? path.join(import.meta.dirname, "..", ".paused");
+function isPaused() {
+  try {
+    return fs.existsSync(PAUSE_FILE);
+  } catch {
+    return false;
+  }
+}
 
 /** prompt_id -> { status, value, max, error, enqueuedAt, startedAt, doneAt } */
 const jobs = new Map();
@@ -196,13 +210,23 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${PORT}`);
 
     if (req.method === "GET" && url.pathname === "/healthz") {
-      const ok = await comfy("/system_stats").then((r) => r.ok).catch(() => false);
-      return send(res, ok ? 200 : 503, { ok, comfy: ok });
+      const paused = isPaused();
+      const comfyOk = await comfy("/system_stats").then((r) => r.ok).catch(() => false);
+      const ok = comfyOk && !paused;
+      return send(res, ok ? 200 : 503, { ok, comfy: comfyOk, paused });
     }
 
     // Enqueue a pre-built ComfyUI graph. The web app builds the graph; we just
     // submit it and start tracking it.
     if (req.method === "POST" && url.pathname === "/enqueue") {
+      // Paused (GPU in use elsewhere) — turn the studio away cleanly. The web
+      // client maps 503 to its "GPU offline" state.
+      if (isPaused()) {
+        return send(res, 503, {
+          error: "The Studio is taking a short break — the GPU is busy. Please try again soon.",
+        });
+      }
+
       const body = await readJson(req);
       const graph = body.graph;
       if (!graph || typeof graph !== "object") return send(res, 400, { error: "Missing graph." });

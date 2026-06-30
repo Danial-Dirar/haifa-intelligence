@@ -24,5 +24,6 @@ npm-debug.log*
 .DS_Store
 *.pem
 .vercel
+.paused
 *.tsbuildinfo
 next-env.d.ts
