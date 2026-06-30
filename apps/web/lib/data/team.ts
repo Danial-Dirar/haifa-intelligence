@@ -40,8 +40,8 @@ export const team: TeamMember[] = [
   {
     name: "Md. Rashed Ul Islam Chowdhury",
     role: "Design & Frontend",
-    bio: "Shapes how Haifa looks and feels — brand visuals, UI/UX, and the front-end that ships it. Turns dense AI tooling into clean, intuitive interfaces people actually enjoy using.",
-    focus: ["UI/UX Design", "Graphic Design", "Frontend Dev", "React"],
+    bio: "Shapes how Haifa looks and feels — brand visuals, UI/UX, and the front-end that ships it. Also builds business-tailored chatbots and prompt-enhancement tools running on local AI.",
+    focus: ["UI/UX Design", "Graphic Design", "Frontend Dev", "Business Chatbots", "Local AI"],
     github: "", // TODO: add Rashed's GitHub URL
     photo: {
       src: "/team/rashed.jpg",
