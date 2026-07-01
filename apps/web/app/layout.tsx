@@ -72,7 +72,11 @@ export default function RootLayout({
         {/* Server-rendered anti-FOUC theme script (runs before paint) */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col antialiased">
+      {/* suppressHydrationWarning: browser extensions (Grammarly, password
+          managers, etc.) inject data-* attributes on <body> before React
+          hydrates. This silences that harmless mismatch without hiding real
+          bugs deeper in the tree. */}
+      <body suppressHydrationWarning className="min-h-full flex flex-col antialiased">
         <SmoothScroll>
           <Navbar />
           <main className="flex-1">{children}</main>

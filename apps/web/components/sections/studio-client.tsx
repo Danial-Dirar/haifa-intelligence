@@ -1,8 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Clock, Download, ImageIcon, Loader2, Sparkles, Users, Wand2 } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  Clock,
+  Download,
+  ImageIcon,
+  Loader2,
+  Sparkles,
+  Users,
+  Wand2,
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,6 +99,103 @@ type Result = {
 };
 
 const styles = imageStyles.map(publicStyle);
+type StyleOption = (typeof styles)[number];
+
+/**
+ * Compact style selector: a single row showing the current style, which opens a
+ * grid popover on click. Keeps the tall list of styles from pushing the rest of
+ * the controls — and the Generate button — far down the panel.
+ */
+function StylePicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const active = styles.find((s) => s.id === value)!;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-xl border bg-background/40 p-2.5 text-left transition-colors",
+          open ? "border-brand-1/60 ring-1 ring-brand-1/40" : "border-border/60 hover:border-brand-1/40"
+        )}
+      >
+        <span className={cn("size-9 shrink-0 rounded-lg bg-gradient-to-br", active.accent)} />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium leading-tight">{active.name}</span>
+          <span className="block text-[0.7rem] text-muted-foreground">{active.sample}</span>
+        </span>
+        <ChevronDown
+          className={cn("size-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 rounded-2xl border border-border/60 bg-popover p-2 shadow-xl shadow-black/20"
+        >
+          <div
+            data-lenis-prevent
+            className="grid max-h-[19rem] grid-cols-2 gap-2 overflow-y-auto p-1"
+          >
+            {styles.map((s: StyleOption) => {
+              const selected = s.id === value;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => {
+                    onChange(s.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "group relative overflow-hidden rounded-xl border p-2.5 text-left transition-all",
+                    selected
+                      ? "border-brand-1/60 ring-1 ring-brand-1/40"
+                      : "border-border/60 hover:border-brand-1/40"
+                  )}
+                >
+                  <div className={cn("mb-2 h-12 w-full rounded-lg bg-gradient-to-br", s.accent)} />
+                  <p className="text-sm font-medium leading-tight">{s.name}</p>
+                  <p className="mt-0.5 line-clamp-1 text-[0.7rem] text-muted-foreground">{s.sample}</p>
+                  {selected && <Check className="absolute right-2 top-2 size-4 text-brand-1" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function StudioClient() {
   const [prompt, setPrompt] = useState("");
@@ -210,30 +317,9 @@ export function StudioClient() {
           />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           <label className="text-sm font-medium">Style</label>
-          <div className="grid grid-cols-2 gap-2">
-            {styles.map((s) => {
-              const active = s.id === styleId;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setStyleId(s.id)}
-                  className={cn(
-                    "group relative overflow-hidden rounded-xl border p-2.5 text-left transition-all",
-                    active
-                      ? "border-brand-1/60 ring-1 ring-brand-1/40"
-                      : "border-border/60 hover:border-brand-1/40"
-                  )}
-                >
-                  <div className={cn("mb-2 h-12 w-full rounded-lg bg-gradient-to-br", s.accent)} />
-                  <p className="text-sm font-medium leading-tight">{s.name}</p>
-                  <p className="mt-0.5 line-clamp-1 text-[0.7rem] text-muted-foreground">{s.sample}</p>
-                </button>
-              );
-            })}
-          </div>
+          <StylePicker value={styleId} onChange={setStyleId} />
           <p className="text-xs text-muted-foreground">{activeStyle.description}</p>
         </div>
 

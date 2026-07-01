@@ -38,7 +38,7 @@ export const styleGalleries: StyleGallery[] = [
   ] },
   { id: "dot-matrix", name: "Dot Matrix", examples: [
     { src: "/studio/examples/dot-matrix-1.webp", w: 1024, h: 1024, blur: "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADwBACdASoUABQAPwF2s1OrJySiqAgBYCAJZwC7Ay6onzPhbCXX3wftgrBIqNxfDwAA/udAqcyyrwTZLNkqOIFeHKBZkiH76bVU9ygQO+K3ZquIdij0vHO1bitGN7ppJZj5yTPVkcfoW9YKCvV/RoViVGIbuft0l+mX8LQAAAA=" },
-    { src: "/studio/examples/dot-matrix-2.webp", w: 1008, h: 1008, blur: "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAABQBACdASoUABQAPwF0sVOrJqQiqAgBYCAJaQAALdg+Zq0K/h5VGU5J0sUAAP7vw39rzMNHMNKbiXL4M4xt12BpIE7J6yDpRPiGTFKLvYZ9grQ1ldI8W5nfxdJ4qvOBHOYSjwX5Qm226Q9iKDlhoUCeWNZ2HJFytwhc24czVowmC4AAAAA=" },
+    { src: "/studio/examples/dot-matrix-2.webp", w: 1024, h: 1024, blur: "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAACwBACdASoUABQAPu1urlIppiQiqAgBMB2JZwAu/8A8+rdvgewwIPh+6iWdiv+QAP37AfDkqNmCmEwqDPsgOM3ZlZn8AFQKAa4xKN+7VcgKOSZDN747MZrSGBys3NCWMW1YgBK2z35rh1HddqbyAVUxIw9DKaT4RNKnMd2RvxcIWgx9nnrRipvnhtxttBH+fey7TdAw1jvZc6/SFKAAAA==" },
   ] },
   { id: "kids-drawing", name: "Kids' Drawing", examples: [
     { src: "/studio/examples/kids-drawing-1.webp", w: 1024, h: 1024, blur: "data:image/webp;base64,UklGRtYAAABXRUJQVlA4IMoAAABwBQCdASoUABQAPwF0sVOrJqQiqAgBYCAJZAC7AYuQZE7wWcsL1gdoJ0J8qKVyz0STw7lAAP7rfD7t1j6lz7tHzzY6kQCc7OqADp4PeVVgNZtYa9yL7V6xUvhZUTt5r0o6vFVsIcSaAC3u0vHGUsAmUFcxvVpOc3eZ8ulyRAQnV30eafgGURjClzMudoWyCgyxtt6fUEgdvCD7/6duiPhdfvrdhJvT8Vx85iJTsW18WBM4WRKUgWofRB5Q4JYe3KRqdtMyIBe3GIAA" },

@@ -43,7 +43,7 @@ export default function StudioPage() {
         description="Type what you want, choose a look, and our own GPU generates it live — with a real queue and step-by-step progress. No model jargon, just styles."
       />
 
-      <section className="container-page pb-12">
+      <section className="container-page pt-4 pb-12 md:pt-8">
         <Reveal>
           <StudioClient />
         </Reveal>
