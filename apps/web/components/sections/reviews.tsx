@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Mail, Quote } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Mail, Quote } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { reviews } from "@/lib/data/reviews";
 import { cn } from "@/lib/utils";
@@ -76,6 +77,16 @@ export function Reviews({ withHeading = true }: { withHeading?: boolean }) {
                 <Quote className="mb-2 size-7 text-brand-1/20" aria-hidden />
                 {r.quote}
               </blockquote>
+
+              {r.projectSlug && (
+                <Link
+                  href={`/work/${r.projectSlug}`}
+                  className="mt-5 inline-flex w-fit items-center gap-1 text-sm font-medium text-brand-2 transition-colors hover:text-brand-1"
+                >
+                  See the project
+                  <ArrowUpRight className="size-4" />
+                </Link>
+              )}
             </figure>
           </Reveal>
         ))}

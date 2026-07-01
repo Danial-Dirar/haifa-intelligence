@@ -14,6 +14,21 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "haifa-hivemind",
+    title: "Haifa HiveMind",
+    category: "ML",
+    year: "2026",
+    summary:
+      "A private, local AI research assistant — drop in your papers, ask grounded questions with citations, and it learns from your feedback. Runs entirely offline on your own machine.",
+    description:
+      "Built for a microbiology researcher who needed an assistant that never sends data to the cloud. HiveMind ingests PDFs, DOCX, text and images into a local knowledge base, answers questions grounded in those sources with citations, and reads screenshots with a vision model. When an answer misses, the user rejects it and the assistant rethinks; approved answers feed a QLoRA fine-tuning loop, so it adapts to how the researcher works. Chat history is searchable with a 30-day recycle bin, and simple On / Pause / Off power controls keep the GPU busy only when needed. Shipped as a cross-platform Electron desktop app over a FastAPI + React core — API-first, so mobile clients can connect over the LAN later.",
+    tags: ["Local AI", "RAG", "Fine-tuning"],
+    stack: ["Python", "FastAPI", "React", "Electron", "Ollama", "QLoRA"],
+    repo: "https://github.com/Danial-Dirar/haifa-hivemind",
+    accent: "from-brand-1/30 to-brand-2/20",
+    featured: true,
+  },
+  {
     slug: "groundwater-prediction",
     title: "Groundwater Level Prediction",
     category: "ML",

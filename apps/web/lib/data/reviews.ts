@@ -16,6 +16,8 @@ export type Review = {
   quote: string;
   /** Verification contacts, personal first then institutional. */
   emails: string[];
+  /** Slug of the related project (in projects.ts), to cross-link the two. */
+  projectSlug?: string;
   photo: {
     src: string;
     alt: string;
@@ -33,6 +35,7 @@ export const reviews: Review[] = [
     quote:
       "Working with Haifa Intelligence on my local AI research assistant was genuinely excellent. Communication stayed clear and responsive from day one, and they built the tool around how I actually work in microbiology. I can drop in my research papers and it reads, understands, and references them during our conversations. My favourite part is that when an answer isn't quite right, it asks a question back to understand what I mean instead of just repeating itself, which makes the whole thing feel natural. Everything runs locally on my own machine behind a simple interface I can manage without any technical background. It came in on budget, the quality went past what I expected, and I'd happily work with them again.",
     emails: ["jaki.muzahid@gmail.com", "s2123538@siswa.um.edu.my"],
+    projectSlug: "haifa-hivemind",
     photo: {
       src: "/reviews/jaki.jpg",
       alt: "Jaki Muzahid",

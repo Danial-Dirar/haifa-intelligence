@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Quote } from "lucide-react";
 import { GitHubIcon } from "@/components/shared/icons";
 import { Reveal } from "@/components/motion/reveal";
 import { Aurora } from "@/components/shared/aurora";
 import { Button } from "@/components/ui/button";
 import { projects, getProject } from "@/lib/data/projects";
+import { reviews } from "@/lib/data/reviews";
 import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -34,6 +36,8 @@ export default async function ProjectPage({
   if (!project) notFound();
 
   const related = projects.filter((p) => p.slug !== project.slug).slice(0, 3);
+  // If a client reviewed this exact project, feature their words on the page.
+  const review = reviews.find((r) => r.projectSlug === project.slug);
 
   return (
     <>
@@ -149,6 +153,52 @@ export default async function ProjectPage({
           </Reveal>
         </div>
       </section>
+
+      {/* Client testimonial — shown only when a review is linked to this project */}
+      {review && (
+        <section className="container-page pb-8">
+          <Reveal>
+            <figure className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40 p-8 md:p-10">
+              <Quote className="absolute right-8 top-8 size-10 text-brand-1/15" aria-hidden />
+              <p className="text-xs font-medium uppercase tracking-wider text-brand-2">
+                What the client said
+              </p>
+              <blockquote className="relative mt-4 max-w-3xl text-lg text-pretty text-muted-foreground">
+                {review.quote}
+              </blockquote>
+              <figcaption className="mt-6 flex items-center gap-4">
+                <div className="relative size-14 shrink-0 overflow-hidden rounded-2xl ring-1 ring-border/60">
+                  <Image
+                    src={review.photo.src}
+                    alt={review.photo.alt}
+                    fill
+                    sizes="56px"
+                    placeholder="blur"
+                    blurDataURL={review.photo.blurDataURL}
+                    className="object-cover"
+                    style={{ objectPosition: review.photo.position ?? "center" }}
+                  />
+                </div>
+                <div>
+                  <p className="font-display font-semibold leading-tight">{review.name}</p>
+                  {review.affiliationUrl ? (
+                    <a
+                      href={review.affiliationUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-brand-2 underline-offset-2 hover:underline"
+                    >
+                      {review.affiliation}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-brand-2">{review.affiliation}</p>
+                  )}
+                </div>
+              </figcaption>
+            </figure>
+          </Reveal>
+        </section>
+      )}
 
       {/* Related */}
       <section className="container-page pb-24">
