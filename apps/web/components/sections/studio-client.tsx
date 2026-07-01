@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import {
   Check,
@@ -25,6 +26,7 @@ import {
   megapixelRange,
   estimateSeconds,
 } from "@/lib/data/styles";
+import { styleGalleries } from "@/lib/data/gallery";
 import { cn } from "@/lib/utils";
 
 function fmtDur(s: number) {
@@ -193,6 +195,67 @@ function StylePicker({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * The empty-stage inspiration preview: before the user generates anything, the
+ * canvas softly cross-fades through real outputs of the *currently selected*
+ * style, so the dead space becomes contextual inspiration. The moment a real
+ * result exists it's replaced by the user's own image.
+ */
+function CanvasPreview({ styleId, styleName }: { styleId: string; styleName: string }) {
+  // Remounted (via key={styleId}) on every style change, so idx starts fresh.
+  const examples = styleGalleries.find((g) => g.id === styleId)?.examples ?? [];
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (examples.length < 2) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % examples.length), 4200);
+    return () => clearInterval(t);
+  }, [examples.length]);
+
+  // No gallery for this style — fall back to the plain placeholder.
+  if (examples.length === 0) {
+    return (
+      <div className="relative flex flex-col items-center gap-3 text-center text-muted-foreground">
+        <ImageIcon className="size-10" />
+        <p className="max-w-xs text-sm">Your generated image will appear here.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute inset-0">
+      {examples.map((ex, i) => (
+        <Image
+          key={ex.src}
+          src={ex.src}
+          alt=""
+          fill
+          sizes="(max-width: 1024px) 100vw, 60vw"
+          placeholder="blur"
+          blurDataURL={ex.blur}
+          className={cn(
+            "object-cover transition-opacity duration-1000",
+            i === idx ? "opacity-100" : "opacity-0"
+          )}
+        />
+      ))}
+      {/* Soft wash so the example reads as a backdrop, not the user's result —
+          and so the caption stays legible along the bottom. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-background/25" />
+      <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-background/70 px-2.5 py-1 text-[0.7rem] font-medium backdrop-blur">
+        <Sparkles className="size-3 text-brand-2" />
+        Example · {styleName}
+      </span>
+      <div className="absolute inset-x-0 bottom-0 p-5 text-center">
+        <p className="text-sm text-muted-foreground">
+          A taste of <span className="font-medium text-foreground">{styleName}</span>. Write a
+          prompt and generate your own.
+        </p>
+      </div>
     </div>
   );
 }
@@ -420,10 +483,7 @@ export function StudioClient() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={current.image} alt={current.prompt} className="relative size-full object-contain" />
           ) : (
-            <div className="relative flex flex-col items-center gap-3 text-center text-muted-foreground">
-              <ImageIcon className="size-10" />
-              <p className="max-w-xs text-sm">Your generated image will appear here.</p>
-            </div>
+            <CanvasPreview key={styleId} styleId={styleId} styleName={activeStyle.name} />
           )}
 
           {busy && (

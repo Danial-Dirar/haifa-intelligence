@@ -69,7 +69,14 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} h-full`}
     >
       <head>
-        {/* Server-rendered anti-FOUC theme script (runs before paint) */}
+        {/* Blocking anti-FOUC theme script. Must run before <body> paints, so
+            it's an inline <script> in <head> (external/next-script would defer
+            it past first paint and flash the default light theme). It's server-
+            rendered and hydration claims it, so React never re-creates it at
+            runtime. NOTE: in dev, a Fast Refresh that remounts the root layout
+            logs a one-off React "script tag while rendering" console warning —
+            that's a react-dom *development* build message, stripped in the
+            production bundle, and never seen by users. */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       {/* suppressHydrationWarning: browser extensions (Grammarly, password
