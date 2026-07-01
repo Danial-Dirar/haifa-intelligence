@@ -8,6 +8,7 @@ import { VideoGallery } from "@/components/sections/video-gallery";
 import { Process } from "@/components/sections/process";
 import { FounderCallout } from "@/components/sections/founder-callout";
 import { Team } from "@/components/sections/team";
+import { Reviews } from "@/components/sections/reviews";
 import { CTA } from "@/components/sections/cta";
 
 export default function HomePage() {
@@ -23,6 +24,7 @@ export default function HomePage() {
       <Process />
       <FounderCallout />
       <Team />
+      <Reviews />
       <CTA />
     </>
   );
